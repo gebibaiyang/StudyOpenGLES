@@ -38,6 +38,34 @@ public class ParticlesActivity extends AppCompatActivity {
         } else {
             return;
         }
+        glSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+
+            private float previousX, previousY;
+
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent != null) {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                        previousX = motionEvent.getX();
+                        previousY = motionEvent.getY();
+                    } else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                        final float deltax = motionEvent.getX() - previousX;
+                        final float deltay = motionEvent.getY() - previousY;
+                        previousX = motionEvent.getX();
+                        previousY = motionEvent.getY();
+                        glSurfaceView.queueEvent(new Runnable() {
+                            @Override
+                            public void run() {
+                                particlesRenderer.handleTouchDrag(deltax, deltay);
+                            }
+                        });
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
         setContentView(glSurfaceView);
     }
 
